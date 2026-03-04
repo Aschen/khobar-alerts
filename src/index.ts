@@ -6,10 +6,10 @@ import { scrapeLiveblog, parseEntries, detectNextDayUrl } from "./scraper.js";
 import { filterRelevantNews } from "./analyzer.js";
 import { displayResults, logToFile } from "./display.js";
 import { publishToSlack } from "./slack.js";
-import { sendWhatsAppAlert } from "./whatsapp.js";
+import { sendTelegramAlert } from "./telegram.js";
 
 function validateEnv(): void {
-  const required = ["FIRECRAWL_API_KEY", "OPENAI_API_KEY", "SLACK_BOT_TOKEN"];
+  const required = ["OPENAI_API_KEY", "SLACK_BOT_TOKEN"];
   const missing = required.filter((key) => !process.env[key]);
   if (missing.length > 0) {
     console.error(`Missing environment variables: ${missing.join(", ")}`);
@@ -49,6 +49,8 @@ async function check(): Promise<void> {
 
     // Mark all entries as seen (before analysis, to avoid re-processing on failure)
     for (const entry of newEntries) {
+      const title = entry.content.split("\n")[0].replace(/^#+\s*/, "").trim();
+      console.log(`  • ${title.slice(0, 100)}`);
       state.seenHashes.push(entry.hash);
     }
 
@@ -57,8 +59,8 @@ async function check(): Promise<void> {
       const relevant = await filterRelevantNews(newEntries);
       displayResults(relevant);
       logToFile(relevant);
-      await publishToSlack(relevant);
-      await sendWhatsAppAlert(relevant);
+      await publishToSlack(relevant, state.currentUrl);
+      await sendTelegramAlert(relevant, state.currentUrl);
     } else {
       console.log("No new entries to analyze.");
     }

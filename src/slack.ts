@@ -1,6 +1,6 @@
 import { WebClient } from "@slack/web-api";
 import { RelevantItem } from "./types.js";
-import { SLACK_CHANNEL_ID, SLACK_TAG_USER_ID, TIMEZONE } from "./config.js";
+import { SLACK_CHANNEL_ID, SLACK_TAG_USER_ID } from "./config.js";
 
 const URGENCY_EMOJIS: Record<string, string> = {
   critical: ":rotating_light:",
@@ -16,10 +16,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const slack = new WebClient(process.env.SLACK_BOT_TOKEN);
 
-export async function publishToSlack(items: RelevantItem[]): Promise<void> {
+export async function publishToSlack(items: RelevantItem[], sourceUrl: string): Promise<void> {
   if (items.length === 0) return;
-
-  const ts = new Date().toLocaleString("en-US", { timeZone: TIMEZONE });
 
   for (const item of items) {
     const emoji = URGENCY_EMOJIS[item.urgency] ?? ":question:";
@@ -53,7 +51,7 @@ export async function publishToSlack(items: RelevantItem[]): Promise<void> {
             elements: [
               {
                 type: "mrkdwn",
-                text: `*${category}* · ${item.urgency.toUpperCase()} · ${ts}`,
+                text: `*${category}* · ${item.urgency.toUpperCase()} · ${item.publishedDate} · <${sourceUrl}|Source>`,
               },
               {
                 type: "mrkdwn",
@@ -63,6 +61,8 @@ export async function publishToSlack(items: RelevantItem[]): Promise<void> {
           },
         ],
         text: `${emoji} ${item.headline} — ${item.summary}${tagLine}`,
+        unfurl_links: false,
+        unfurl_media: false,
       });
     } catch (error) {
       console.error(`Failed to post to Slack: ${error}`);

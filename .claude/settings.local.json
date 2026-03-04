@@ -7,7 +7,11 @@
       "WebFetch(domain:ai-sdk.dev)",
       "WebFetch(domain:www.npmjs.com)",
       "Bash(npm install:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(curl -s \"https://api.telegram.org/bot8600371622:AAE8pewqH2S-yP123lKvsVPqwjSA2bzv2L8/getUpdates\")",
+      "Bash(python3:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:docs.browserless.io)"
     ]
   }
 }

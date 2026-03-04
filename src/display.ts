@@ -33,7 +33,7 @@ export function displayResults(items: RelevantItem[]): void {
     const icon = URGENCY_ICONS[item.urgency] ?? "[?]";
     const category = CATEGORY_LABELS[item.category] ?? item.category;
 
-    console.log(`\n${icon} ${category} | ${item.urgency.toUpperCase()}`);
+    console.log(`\n${icon} ${category} | ${item.urgency.toUpperCase()} | ${item.publishedDate}`);
     console.log(`    ${item.headline}`);
     console.log(`    ${item.summary}`);
     console.log(`    > "${item.sourceExcerpt}"`);

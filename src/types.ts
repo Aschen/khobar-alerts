@@ -25,6 +25,9 @@ export const relevantItemSchema = z.object({
   sourceExcerpt: z
     .string()
     .describe("Brief quote from the original entry"),
+  publishedDate: z
+    .string()
+    .describe("The publication date/time of the entry as written in the liveblog, e.g. '3 March 2026, 14:32 GMT'"),
   affectsDammamKhobar: z
     .boolean()
     .describe("True if the news specifically concerns an attack on or direct threat to Dammam or Khobar"),

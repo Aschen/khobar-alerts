@@ -39,12 +39,19 @@ export async function filterRelevantNews(
     .map((e, i) => `--- Entry ${i + 1} ---\n${e.content}`)
     .join("\n\n");
 
-  const { object } = await generateObject({
+  const { object, usage } = await generateObject({
     model: openai(MODEL_ID),
     schema: analysisResponseSchema,
     system: SYSTEM_PROMPT,
     prompt: `Analyze these ${entries.length} liveblog entries. Return ONLY items relevant to the safety of someone in Dammam, Saudi Arabia. If none are relevant, return an empty array.\n\n${entriesText}`,
   });
+
+  const inputCost = (usage.promptTokens / 1_000_000) * 1.25;
+  const outputCost = (usage.completionTokens / 1_000_000) * 10;
+  const totalCost = inputCost + outputCost;
+  console.log(
+    `  [openai] ${usage.promptTokens} in / ${usage.completionTokens} out — $${totalCost.toFixed(4)}`
+  );
 
   return object.relevantItems;
 }

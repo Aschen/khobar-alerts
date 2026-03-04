@@ -3,7 +3,7 @@ export const INITIAL_URL =
 
 export const BASE_URL = "https://www.aljazeera.com";
 
-export const CRON_SCHEDULE = "*/5 * * * *"; // Every 5 minutes
+export const CRON_SCHEDULE = "*/15 * * * *"; // Every 15 minutes
 
 export const MODEL_ID = "gpt-5-chat-latest";
 
@@ -19,4 +19,4 @@ export const SLACK_CHANNEL_ID = "C0A9LK04BEK";
 
 export const SLACK_TAG_USER_ID = "U09ACEEJKST";
 
-export const WHATSAPP_PHONE = "+33629951620";
+export const TELEGRAM_CHAT_ID = "1745541238";
