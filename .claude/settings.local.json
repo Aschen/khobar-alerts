@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.aljazeera.com)",
+      "WebSearch",
+      "WebFetch(domain:docs.firecrawl.dev)",
+      "WebFetch(domain:ai-sdk.dev)",
+      "WebFetch(domain:www.npmjs.com)",
+      "Bash(npm install:*)",
+      "Bash(npx tsc:*)"
+    ]
+  }
+}
