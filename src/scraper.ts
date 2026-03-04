@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs";
+import { writeFileSync, mkdirSync, existsSync } from "fs";
 import { RawEntry } from "./types.js";
 import { BASE_URL } from "./config.js";
 import { hashContent } from "./state.js";
@@ -62,6 +62,7 @@ export async function scrapeLiveblog(
     }
 
     const html = await res.text();
+    if (!existsSync("data")) mkdirSync("data", { recursive: true });
     writeFileSync("data/last-scrape.html", html);
     const text = stripHtml(html);
     writeFileSync("data/last-scrape.txt", text);
