@@ -77,6 +77,12 @@ export async function scrapeLiveblog(
   }
 }
 
+const JUNK_PATTERNS = [
+  /cookie settings/i,
+  /^advertisement$/im,
+  /this content is unavailable/i,
+];
+
 export function parseEntries(text: string): RawEntry[] {
   // Split by H2 headers (## ...)
   const headerPattern = /^## /m;
@@ -86,12 +92,14 @@ export function parseEntries(text: string): RawEntry[] {
     sections = text
       .split(/(?=^## )/m)
       .map((s) => s.trim())
-      .filter((s) => s.length > 50);
+      .filter((s) => s.length > 50)
+      .filter((s) => !JUNK_PATTERNS.some((p) => p.test(s)));
   } else if (text.includes("---")) {
     sections = text
       .split(/^---+$/m)
       .map((s) => s.trim())
-      .filter((s) => s.length > 50);
+      .filter((s) => s.length > 50)
+      .filter((s) => !JUNK_PATTERNS.some((p) => p.test(s)));
   } else {
     sections = text.trim().length > 50 ? [text.trim()] : [];
   }

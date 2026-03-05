@@ -3,6 +3,7 @@ import { z } from "zod";
 export interface AppState {
   currentUrl: string;
   seenHashes: string[];
+  postedHeadlines: string[];
   lastChecked: string;
 }
 

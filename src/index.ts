@@ -17,6 +17,10 @@ function validateEnv(): void {
   }
 }
 
+function normalizeHeadline(h: string): string {
+  return h.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, " ").trim();
+}
+
 let isRunning = false;
 
 async function check(): Promise<void> {
@@ -57,10 +61,25 @@ async function check(): Promise<void> {
     // Analyze new entries with AI
     if (newEntries.length > 0) {
       const relevant = await filterRelevantNews(newEntries);
-      displayResults(relevant);
-      logToFile(relevant);
-      await publishToSlack(relevant, state.currentUrl);
-      await sendTelegramAlert(relevant, state.currentUrl);
+
+      // Deduplicate alerts already posted in previous runs (normalized comparison)
+      const postedSet = new Set(state.postedHeadlines.map(normalizeHeadline));
+      const fresh = relevant.filter((r) => !postedSet.has(normalizeHeadline(r.headline)));
+
+      if (fresh.length < relevant.length) {
+        console.log(
+          `  Deduped ${relevant.length - fresh.length} already-posted alert(s)`
+        );
+      }
+
+      displayResults(fresh);
+      logToFile(fresh);
+      await publishToSlack(fresh, state.currentUrl);
+      await sendTelegramAlert(fresh, state.currentUrl);
+
+      for (const item of fresh) {
+        state.postedHeadlines.push(normalizeHeadline(item.headline));
+      }
     } else {
       console.log("No new entries to analyze.");
     }

@@ -9,6 +9,10 @@ const URGENCY_ICONS: Record<string, string> = {
 
 const TELEGRAM_API = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}`;
 
+function escapeHtml(text: string): string {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
 export async function sendTelegramAlert(
   items: RelevantItem[],
   sourceUrl: string
@@ -20,7 +24,12 @@ export async function sendTelegramAlert(
 
   for (const item of dammamItems) {
     const icon = URGENCY_ICONS[item.urgency] ?? "\u2753";
-    const message = `${icon} *IRAN WATCH — Dammam/Khobar Alert*\n\n*${item.headline}*\n${item.summary}\n\n_"${item.sourceExcerpt}"_\n${item.publishedDate} · [Source](${sourceUrl})`;
+    const message =
+      `${icon} <b>IRAN WATCH — Dammam/Khobar Alert</b>\n\n` +
+      `<b>${escapeHtml(item.headline)}</b>\n` +
+      `${escapeHtml(item.summary)}\n\n` +
+      `<i>"${escapeHtml(item.sourceExcerpt)}"</i>\n` +
+      `${escapeHtml(item.publishedDate)} · <a href="${sourceUrl}">Source</a>`;
 
     try {
       const res = await fetch(`${TELEGRAM_API}/sendMessage`, {
@@ -29,7 +38,7 @@ export async function sendTelegramAlert(
         body: JSON.stringify({
           chat_id: TELEGRAM_CHAT_ID,
           text: message,
-          parse_mode: "Markdown",
+          parse_mode: "HTML",
         }),
       });
       if (!res.ok) {

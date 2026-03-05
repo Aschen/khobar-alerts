@@ -7,6 +7,7 @@ import { INITIAL_URL, STATE_FILE, MAX_SEEN_HASHES } from "./config.js";
 const defaultState: AppState = {
   currentUrl: INITIAL_URL,
   seenHashes: [],
+  postedHeadlines: [],
   lastChecked: "",
 };
 
@@ -18,6 +19,7 @@ export function loadState(): AppState {
   try {
     const raw = readFileSync(STATE_FILE, "utf-8");
     const parsed = JSON.parse(raw) as AppState;
+    parsed.postedHeadlines ??= [];
     if (!parsed.currentUrl || !Array.isArray(parsed.seenHashes)) {
       console.warn("Corrupted state file, resetting to defaults");
       return { ...defaultState, seenHashes: [] };
@@ -35,9 +37,12 @@ export function saveState(state: AppState): void {
     mkdirSync(dir, { recursive: true });
   }
 
-  // Trim hashes if over limit
+  // Trim hashes and headlines if over limit
   if (state.seenHashes.length > MAX_SEEN_HASHES) {
     state.seenHashes = state.seenHashes.slice(-MAX_SEEN_HASHES);
+  }
+  if (state.postedHeadlines.length > MAX_SEEN_HASHES) {
+    state.postedHeadlines = state.postedHeadlines.slice(-MAX_SEEN_HASHES);
   }
 
   state.lastChecked = new Date().toISOString();
@@ -45,5 +50,12 @@ export function saveState(state: AppState): void {
 }
 
 export function hashContent(content: string): string {
-  return createHash("sha256").update(content.trim()).digest("hex");
+  // Hash only the headline (first line) for stability across scrapes
+  const firstLine = content
+    .split("\n")[0]
+    .replace(/^#+\s*/, "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+  return createHash("sha256").update(firstLine).digest("hex");
 }
