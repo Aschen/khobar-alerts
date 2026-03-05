@@ -110,7 +110,7 @@ async function main(): Promise<void> {
 
   console.log("Iran Watch — Liveblog Monitor");
   console.log("Monitoring for safety-relevant news in Dammam, Saudi Arabia");
-  console.log(`Schedule: every 5 minutes (${TIMEZONE})\n`);
+  console.log(`Schedule: ${CRON_SCHEDULE} (${TIMEZONE})\n`);
 
   // Run initial check
   await check();

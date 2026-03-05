@@ -1,4 +1,5 @@
 import { writeFileSync, mkdirSync, existsSync } from "fs";
+import { chromium } from "playwright";
 import { RawEntry } from "./types.js";
 import { BASE_URL } from "./config.js";
 import { hashContent } from "./state.js";
@@ -46,22 +47,14 @@ function stripHtml(html: string): string {
 export async function scrapeLiveblog(
   url: string
 ): Promise<string | null> {
+  const browser = await chromium.launch();
   try {
-    const res = await fetch(
-      `https://production-sfo.browserless.io/chrome/content?timeout=60000&token=${process.env.BROWSERLESS_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url }),
-      }
-    );
+    const page = await browser.newPage();
+    await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+    // Wait for liveblog entries to render
+    await page.waitForTimeout(5000);
 
-    if (!res.ok) {
-      console.error(`Browserless failed: ${res.status} ${res.statusText}`);
-      return null;
-    }
-
-    const html = await res.text();
+    const html = await page.content();
     if (!existsSync("data")) mkdirSync("data", { recursive: true });
     writeFileSync("data/last-scrape.html", html);
     const text = stripHtml(html);
@@ -74,6 +67,8 @@ export async function scrapeLiveblog(
   } catch (error) {
     console.error("Scrape failed:", error);
     return null;
+  } finally {
+    await browser.close();
   }
 }
 
