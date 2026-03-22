@@ -1,5 +1,5 @@
 export const INITIAL_URL =
-  "https://www.aljazeera.com/news/liveblog/2026/3/4/iran-live-news-us-embassy-in-dubai-hit-israel-pounds-tehran-beirut";
+  "https://www.aljazeera.com/news/liveblog/2026/3/22/iran-war-live-trump-threatens-attacks-on-power-plants-over-hormuz-strait";
 
 export const BASE_URL = "https://www.aljazeera.com";
 
