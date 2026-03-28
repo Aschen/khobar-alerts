@@ -1,5 +1,5 @@
 export const INITIAL_URL =
-  "https://www.aljazeera.com/news/liveblog/2026/3/22/iran-war-live-trump-threatens-attacks-on-power-plants-over-hormuz-strait";
+  "https://www.aljazeera.com/news/liveblog/2026/3/28/iran-war-live-trump-again-slams-natos-lack-of-support-for-war-on-tehran";
 
 export const BASE_URL = "https://www.aljazeera.com";
 
